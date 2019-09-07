@@ -3,11 +3,16 @@ package consistentcommit
 import (
 	"github.com/theothertomelliott/consistentcommit/executor"
 	"github.com/theothertomelliott/consistentcommit/files"
+	"github.com/theothertomelliott/consistentcommit/versioncontrol"
 )
 
 var (
-	_ files.Repo        = &mockFileRepo{}
-	_ executor.Executor = &mockExecutor{}
+	_ files.Repo                    = &mockFileRepo{}
+	_ executor.Executor             = &mockExecutor{}
+	_ Builder                       = &mockBuilder{}
+	_ TestRunner                    = &mockTestRunner{}
+	_ versioncontrol.VersionControl = &mockVersionControl{}
+	_ BuildResult                   = &mockBuildResult{}
 )
 
 type mockExecutor struct {
@@ -34,4 +39,36 @@ func (m *mockFileRepo) RmDir(dir string) error {
 
 func (m *mockFileRepo) DirContent(dir string) ([]files.File, error) {
 	return m.dirContent(dir)
+}
+
+type mockBuilder struct {
+	build func(config BuildConfig) (string, error)
+}
+
+func (m *mockBuilder) Build(config BuildConfig) (string, error) {
+	return m.build(config)
+}
+
+type mockVersionControl struct {
+	checkout func(commit string) error
+}
+
+func (m *mockVersionControl) Checkout(commit string) error {
+	return m.checkout(commit)
+}
+
+type mockTestRunner struct {
+	run func(testDir string, command Command) (BuildResult, error)
+}
+
+func (m *mockTestRunner) Run(testDir string, command Command) (BuildResult, error) {
+	return m.run(testDir, command)
+}
+
+type mockBuildResult struct {
+	compare func(BuildResult, ComparisonConfig) ([]Difference, error)
+}
+
+func (m *mockBuildResult) Compare(res BuildResult, cfg ComparisonConfig) ([]Difference, error) {
+	return m.compare(res, cfg)
 }
