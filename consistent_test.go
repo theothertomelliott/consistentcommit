@@ -3,6 +3,8 @@ package consistentcommit
 import (
 	"fmt"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestCheckRun(t *testing.T) {
@@ -22,9 +24,8 @@ func TestCheckRun(t *testing.T) {
 
 	builder := &mockBuilder{
 		build: func(config BuildConfig) (string, error) {
-			// TODO: More complete comparison
-			if config.BuildOutputDir != simpleBuildConfig.BuildOutputDir {
-				t.Errorf("config did not match: %v", config)
+			if !cmp.Equal(config, simpleBuildConfig) {
+				t.Errorf("config mismatch (-want +got):\n%v", cmp.Diff(config, simpleBuildConfig))
 			}
 			return fmt.Sprintf("buildOutput/%v", currentCommit), nil
 		},
