@@ -13,6 +13,7 @@ var (
 	_ TestRunner                    = &mockTestRunner{}
 	_ versioncontrol.VersionControl = &mockVersionControl{}
 	_ BuildResult                   = &mockBuildResult{}
+	_ files.File                    = &mockFile{}
 )
 
 type mockExecutor struct {
@@ -25,12 +26,17 @@ func (m *mockExecutor) Run(executable string, args []string, workingDir string, 
 
 type mockFileRepo struct {
 	copyToTempDir func(string) (string, error)
+	makeTempDir   func() (string, error)
 	rmDir         func(string) error
 	dirContent    func(string) ([]files.File, error)
 }
 
 func (m *mockFileRepo) CopyToTempDir(src string) (string, error) {
 	return m.copyToTempDir(src)
+}
+
+func (m *mockFileRepo) MakeTempDir() (string, error) {
+	return m.makeTempDir()
 }
 
 func (m *mockFileRepo) RmDir(dir string) error {
@@ -71,4 +77,17 @@ type mockBuildResult struct {
 
 func (m *mockBuildResult) Compare(res BuildResult, cfg ComparisonConfig) ([]Difference, error) {
 	return m.compare(res, cfg)
+}
+
+type mockFile struct {
+	path    string
+	content []byte
+}
+
+func (m mockFile) Path() string {
+	return m.path
+}
+
+func (m mockFile) Content() []byte {
+	return m.content
 }
