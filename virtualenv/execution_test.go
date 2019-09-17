@@ -14,21 +14,23 @@ func TestExecution(t *testing.T) {
 		name        string
 		programs    map[string]program
 		files       map[string][]byte
-		executable  string
-		args        []string
-		workingDir  string
+		command     executor.Command
 		env         func(string) string
 		expectedOut executor.Output
 		expectErr   bool
 	}{
 		{
-			name:       "program not found",
-			executable: "missing",
-			expectErr:  true,
+			name: "program not found",
+			command: executor.Command{
+				Executable: "missing",
+			},
+			expectErr: true,
 		},
 		{
-			name:       "valid program",
-			executable: "app",
+			name: "valid program",
+			command: executor.Command{
+				Executable: "app",
+			},
 			programs: map[string]program{
 				"program": func(fs afero.Fs, args []string, workingDir string, env func(string) string) (executor.Output, error) {
 					return &mockOutput{
@@ -46,8 +48,10 @@ func TestExecution(t *testing.T) {
 			},
 		},
 		{
-			name:       "program returns error",
-			executable: "app",
+			name: "program returns error",
+			command: executor.Command{
+				Executable: "app",
+			},
 			programs: map[string]program{
 				"program": func(fs afero.Fs, args []string, workingDir string, env func(string) string) (executor.Output, error) {
 					return nil, fmt.Errorf("program failed")
@@ -68,7 +72,7 @@ func TestExecution(t *testing.T) {
 			for path, content := range test.files {
 				environment.AddFile(path, content)
 			}
-			output, err := environment.Run(test.executable, test.args, test.workingDir, test.env)
+			output, err := environment.Run(test.command, nil)
 			if !cmp.Equal(test.expectedOut, output) {
 				t.Errorf("output not as expected:\n%v", cmp.Diff(test.expectedOut, output))
 			}

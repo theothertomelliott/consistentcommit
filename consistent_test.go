@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/theothertomelliott/consistentcommit/executor"
 )
 
 func TestCheckRun(t *testing.T) {
@@ -16,7 +17,7 @@ func TestCheckRun(t *testing.T) {
 	}
 
 	simpleBuildConfig := BuildConfig{
-		BuildCommand: Command{
+		BuildCommand: executor.Command{
 			Executable: "build",
 		},
 		BuildOutputDir: "/build/output/dir",
@@ -32,7 +33,7 @@ func TestCheckRun(t *testing.T) {
 	}
 
 	runner := &mockTestRunner{
-		run: func(testDir string, command Command) (BuildResult, error) {
+		run: func(testDir string, command executor.Command) (BuildResult, error) {
 			if testDir != "buildOutput/candidate" && testDir != "buildOutput/golden" {
 				t.Errorf("unexpected test dir: %v", testDir)
 			}
@@ -59,7 +60,7 @@ func TestCheckRun(t *testing.T) {
 	}
 
 	vcs := &mockVersionControl{
-		checkout: func(commit string) error {
+		checkout: func(workingDir string, commit string) error {
 			if commit != "golden" && commit != "candidate" {
 				t.Errorf("unexpected commit: %v", commit)
 			}
@@ -78,8 +79,8 @@ func TestCheckRun(t *testing.T) {
 		GoldenCommit:    "golden",
 		CandidateCommit: "candidate",
 		Build:           simpleBuildConfig,
-		Tests: []Command{
-			Command{
+		Tests: []executor.Command{
+			executor.Command{
 				Executable: "run",
 			},
 		},

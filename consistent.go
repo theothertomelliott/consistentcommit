@@ -53,7 +53,7 @@ func (c *Check) Run(cfg Config) error {
 
 func (c *Check) getDirForCommit(commit string, bCfg BuildConfig) (string, error) {
 	// 	Get the commit
-	err := c.vcs.Checkout(commit)
+	err := c.vcs.Checkout(bCfg.BuildCommand.WorkingDir, commit)
 	if err != nil {
 		return "", nil
 	}

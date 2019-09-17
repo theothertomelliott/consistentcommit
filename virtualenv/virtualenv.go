@@ -18,11 +18,13 @@ func New() *Environment {
 		},
 		Repo: aferorepo.New(fs),
 		fs:   fs,
+		vcs:  vcs{},
 	}
 }
 
 type Environment struct {
 	execution
+	vcs
 
 	files.Repo
 	fs afero.Fs

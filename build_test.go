@@ -19,9 +19,9 @@ func TestBuild(t *testing.T) {
 			name: "simple",
 			builder: &builder{
 				Executor: &mockExecutor{
-					run: func(executable string, args []string, workingDir string, env func(string) string) (executor.Output, error) {
-						if executable != "executable" {
-							t.Errorf("incorrect executable: %v", executable)
+					run: func(command executor.Command, env func(string) string) (executor.Output, error) {
+						if command.Executable != "executable" {
+							t.Errorf("incorrect executable: %v", command.Executable)
 						}
 						return nil, nil
 					},
@@ -36,7 +36,7 @@ func TestBuild(t *testing.T) {
 				},
 			},
 			config: BuildConfig{
-				BuildCommand: Command{
+				BuildCommand: executor.Command{
 					Executable: "executable",
 				},
 				BuildOutputDir: "output",
@@ -47,7 +47,7 @@ func TestBuild(t *testing.T) {
 			name: "executor errors out",
 			builder: &builder{
 				Executor: &mockExecutor{
-					run: func(executable string, args []string, workingDir string, env func(string) string) (executor.Output, error) {
+					run: func(command executor.Command, env func(string) string) (executor.Output, error) {
 						return nil, fmt.Errorf("executable failure")
 					},
 				},
@@ -59,7 +59,7 @@ func TestBuild(t *testing.T) {
 				},
 			},
 			config: BuildConfig{
-				BuildCommand: Command{
+				BuildCommand: executor.Command{
 					Executable: "executable",
 				},
 				BuildOutputDir: "output",
@@ -70,7 +70,7 @@ func TestBuild(t *testing.T) {
 			name: "copy errors out",
 			builder: &builder{
 				Executor: &mockExecutor{
-					run: func(executable string, args []string, workingDir string, env func(string) string) (executor.Output, error) {
+					run: func(command executor.Command, env func(string) string) (executor.Output, error) {
 						return nil, nil
 					},
 				},
@@ -81,7 +81,7 @@ func TestBuild(t *testing.T) {
 				},
 			},
 			config: BuildConfig{
-				BuildCommand: Command{
+				BuildCommand: executor.Command{
 					Executable: "executable",
 				},
 				BuildOutputDir: "output",

@@ -20,8 +20,8 @@ func (e *execution) RegisterProgram(name string, r program) {
 	e.programs[name] = r
 }
 
-func (e *Environment) Run(executable string, args []string, workingDir string, env func(string) string) (executor.Output, error) {
-	content, err := afero.ReadFile(e.fs, filepath.Join(workingDir, executable))
+func (e *Environment) Run(command executor.Command, env func(string) string) (executor.Output, error) {
+	content, err := afero.ReadFile(e.fs, filepath.Join(command.WorkingDir, command.Executable))
 	if err != nil {
 		return nil, err
 	}
@@ -29,5 +29,5 @@ func (e *Environment) Run(executable string, args []string, workingDir string, e
 	if !exists {
 		return nil, fmt.Errorf("program not registered for name %q", string(content))
 	}
-	return program(e.fs, args, workingDir, env)
+	return program(e.fs, command.Args, command.WorkingDir, env)
 }

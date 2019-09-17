@@ -8,7 +8,7 @@ import (
 )
 
 type TestRunner interface {
-	Run(testDir string, command Command) (BuildResult, error)
+	Run(testDir string, command executor.Command) (BuildResult, error)
 }
 
 type testRunner struct {
@@ -17,7 +17,7 @@ type testRunner struct {
 	FileRepo files.Repo
 }
 
-func (t *testRunner) Run(testDir string, command Command) (BuildResult, error) {
+func (t *testRunner) Run(testDir string, command executor.Command) (BuildResult, error) {
 
 	outputDir, err := t.FileRepo.MakeTempDir()
 	if err != nil {
@@ -32,7 +32,7 @@ func (t *testRunner) Run(testDir string, command Command) (BuildResult, error) {
 		return defaultEnv(key)
 	}
 
-	_, err = t.Executor.Run(command.Executable, command.Args, testDir, env)
+	_, err = t.Executor.Run(command, env)
 	if err != nil {
 		return nil, err
 	}

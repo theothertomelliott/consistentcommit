@@ -17,9 +17,7 @@ type builder struct {
 
 func (b *builder) Build(config BuildConfig) (string, error) {
 	_, err := b.Executor.Run(
-		config.BuildCommand.Executable,
-		config.BuildCommand.Args,
-		"",
+		config.BuildCommand,
 		b.env(config.BuildCommand),
 	)
 	if err != nil {

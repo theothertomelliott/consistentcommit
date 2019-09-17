@@ -1,23 +1,18 @@
 package consistentcommit
 
+import "github.com/theothertomelliott/consistentcommit/executor"
+
 type Config struct {
 	GoldenCommit    string
 	CandidateCommit string
 	Build           BuildConfig
-	Tests           []Command
+	Tests           []executor.Command
 	Comparison      ComparisonConfig
 }
-
 type ComparisonConfig struct {
 }
 
 type BuildConfig struct {
-	BuildCommand   Command
+	BuildCommand   executor.Command
 	BuildOutputDir string
-}
-
-type Command struct {
-	Executable string
-	Args       []string
-	Env        map[string]string
 }

@@ -3,22 +3,20 @@ package consistentcommit
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/theothertomelliott/consistentcommit/executor"
 	"github.com/theothertomelliott/consistentcommit/files"
 )
 
 func TestEmptyRunSucceeds(t *testing.T) {
 	testDir := "workingDir"
-	testCommand := Command{}
+	testCommand := executor.Command{}
 
 	runner := &testRunner{
 		Executor: &mockExecutor{
-			run: func(executable string, args []string, workingDir string, env func(string) string) (executor.Output, error) {
-				if executable != testCommand.Executable {
-					t.Errorf("unexpected executable: %v", executable)
-				}
-				if workingDir != testDir {
-					t.Errorf("unexpected working dir: %v", workingDir)
+			run: func(command executor.Command, env func(string) string) (executor.Output, error) {
+				if !cmp.Equal(testCommand, command) {
+					t.Errorf("command not as expected:\n%v", cmp.Diff(testCommand, command))
 				}
 				outputEnv := env("OUTPUT_DIR")
 				if outputEnv != "tmp" {
@@ -48,11 +46,11 @@ func TestEmptyRunSucceeds(t *testing.T) {
 
 func TestResultComparison(t *testing.T) {
 	testDir := "workingDir"
-	testCommand := Command{}
+	testCommand := executor.Command{}
 
 	runner := &testRunner{
 		Executor: &mockExecutor{
-			run: func(executable string, args []string, workingDir string, env func(string) string) (executor.Output, error) {
+			run: func(command executor.Command, env func(string) string) (executor.Output, error) {
 				return nil, nil
 			},
 		},

@@ -17,11 +17,11 @@ var (
 )
 
 type mockExecutor struct {
-	run func(executable string, args []string, workingDir string, env func(string) string) (executor.Output, error)
+	run func(command executor.Command, env func(string) string) (executor.Output, error)
 }
 
-func (m *mockExecutor) Run(executable string, args []string, workingDir string, env func(string) string) (executor.Output, error) {
-	return m.run(executable, args, workingDir, env)
+func (m *mockExecutor) Run(command executor.Command, env func(string) string) (executor.Output, error) {
+	return m.run(command, env)
 }
 
 type mockFileRepo struct {
@@ -56,18 +56,18 @@ func (m *mockBuilder) Build(config BuildConfig) (string, error) {
 }
 
 type mockVersionControl struct {
-	checkout func(commit string) error
+	checkout func(workingDir string, commit string) error
 }
 
-func (m *mockVersionControl) Checkout(commit string) error {
-	return m.checkout(commit)
+func (m *mockVersionControl) Checkout(workingDir string, commit string) error {
+	return m.checkout(workingDir, commit)
 }
 
 type mockTestRunner struct {
-	run func(testDir string, command Command) (BuildResult, error)
+	run func(testDir string, command executor.Command) (BuildResult, error)
 }
 
-func (m *mockTestRunner) Run(testDir string, command Command) (BuildResult, error) {
+func (m *mockTestRunner) Run(testDir string, command executor.Command) (BuildResult, error) {
 	return m.run(testDir, command)
 }
 

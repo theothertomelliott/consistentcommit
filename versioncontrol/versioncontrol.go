@@ -1,5 +1,5 @@
 package versioncontrol
 
 type VersionControl interface {
-	Checkout(commit string) error
+	Checkout(workingDir string, commit string) error
 }
