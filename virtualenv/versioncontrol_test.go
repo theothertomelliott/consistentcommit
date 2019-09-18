@@ -59,6 +59,25 @@ func TestCheckout(t *testing.T) {
 				"/repo/file2": []byte("content2"),
 			},
 		},
+		{
+			name:       "doesn't wipe out files outside the repo",
+			workingDir: "/repo",
+			env: func() *Environment {
+				e := New()
+				e.AddFile("/root.txt", []byte("outside the repo"))
+				e.AddCommit("/repo", "c1", tree{
+					"file1": []byte("content1"),
+					"file2": []byte("content2"),
+				})
+				return e
+			}(),
+			commit: "c1",
+			expectedFiles: tree{
+				"/root.txt":   []byte("outside the repo"),
+				"/repo/file1": []byte("content1"),
+				"/repo/file2": []byte("content2"),
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

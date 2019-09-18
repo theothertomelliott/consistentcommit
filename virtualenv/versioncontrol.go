@@ -5,7 +5,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/spf13/afero"
 	"github.com/theothertomelliott/consistentcommit/versioncontrol"
 )
 
@@ -58,7 +57,7 @@ func (e *Environment) Checkout(workingDir string, commit string) error {
 	if !exists {
 		return fmt.Errorf("commit not found: %v", commit)
 	}
-	e.fs = afero.NewMemMapFs()
+	e.fs.RemoveAll(*repoName)
 	for filePath, content := range files {
 		err := e.AddFile(path.Join(workingDir, filePath), content)
 		if err != nil {
