@@ -6,8 +6,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-// TODO: Need to distinguish between the repo dir and a tmp dir
-
 func TestCheckout(t *testing.T) {
 	var tests = []struct {
 		name          string
@@ -24,10 +22,11 @@ func TestCheckout(t *testing.T) {
 			expectErr: true,
 		},
 		{
-			name: "commit with one file",
+			name:       "commit with one file",
+			workingDir: "/repo",
 			env: func() *Environment {
 				e := New()
-				e.AddCommit("c1", tree{
+				e.AddCommit("/repo", "c1", tree{
 					"file1": []byte("content1"),
 					"file2": []byte("content2"),
 				})
@@ -35,19 +34,20 @@ func TestCheckout(t *testing.T) {
 			}(),
 			commit: "c1",
 			expectedFiles: tree{
-				"file1": []byte("content1"),
-				"file2": []byte("content2"),
+				"/repo/file1": []byte("content1"),
+				"/repo/file2": []byte("content2"),
 			},
 		},
 		{
-			name: "selects correct commit with multiple",
+			name:       "selects correct commit with multiple",
+			workingDir: "/repo",
 			env: func() *Environment {
 				e := New()
-				e.AddCommit("c1", tree{
+				e.AddCommit("/repo", "c1", tree{
 					"file1": []byte("content1"),
 					"file2": []byte("content2"),
 				})
-				e.AddCommit("c2", tree{
+				e.AddCommit("/repo/", "c2", tree{
 					"file3": []byte("content3"),
 					"file4": []byte("content4"),
 				})
@@ -55,8 +55,8 @@ func TestCheckout(t *testing.T) {
 			}(),
 			commit: "c1",
 			expectedFiles: tree{
-				"file1": []byte("content1"),
-				"file2": []byte("content2"),
+				"/repo/file1": []byte("content1"),
+				"/repo/file2": []byte("content2"),
 			},
 		},
 	}
