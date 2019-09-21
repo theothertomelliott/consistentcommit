@@ -16,10 +16,24 @@ func TestCheckout(t *testing.T) {
 		expectErr     bool
 	}{
 		{
-			name:      "commit not found",
+			name: "nil",
+		},
+		{
+			name:      "repo not found",
 			env:       New(),
 			commit:    "missing",
 			expectErr: true,
+		},
+		{
+			name: "commit not found",
+			env: func() *Environment {
+				e := New()
+				e.AddCommit("/repo", "c1", tree{})
+				return e
+			}(),
+			workingDir: "/repo",
+			commit:     "missing",
+			expectErr:  true,
 		},
 		{
 			name:       "commit with one file",
